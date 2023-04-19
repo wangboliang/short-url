@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shorturl.mapper.UrlDao">
+
+    <resultMap id="BaseResultMap" type="com.shorturl.entity.UrlDO">
+        <id column="id" property="id"/>
+        <result column="long_url" jdbcType="VARCHAR" property="longUrl"/>
+        <result column="short_url" jdbcType="VARCHAR" property="shortUrl"/>
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
+        <result column="expires_date" jdbcType="TIMESTAMP" property="expiresDate"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, long_url, short_url, created_date, expires_date
+    </sql>
+
+    <insert id="save" parameterType="com.shorturl.entity.UrlDO">
+        INSERT INTO short_url (
+        id, long_url, short_url, created_date, expires_date
+        )
+        VALUES (
+        #{id}, #{longUrl}, #{shortUrl}, #{createdDate}, #{expiresDate}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM short_url
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectLongUrlById" resultType="java.lang.String">
+        SELECT long_url FROM short_url WHERE id = #{id}
+    </select>
+
+    <select id="selectLongUrlByShortUrl" resultType="java.lang.String">
+        SELECT long_url FROM short_url WHERE short_url = #{shortUrl}
+    </select>
+
+    <delete id="clearExpiredData">
+        <![CDATA[
+
+            DELETE FROM short_url WHERE expires_date < now()
+
+        ]]>
+    </delete>
+</mapper>
