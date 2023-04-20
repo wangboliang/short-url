@@ -50,6 +50,13 @@
             <version>${mysql.connector.version}</version>
         </dependency>
 
+        <!-- jasypt encryptor -->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
         <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

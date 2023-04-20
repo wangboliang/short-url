@@ -3,13 +3,17 @@ server:
   servlet:
     context-path: /short-url
 
+jasypt:
+  encryptor:
+    password: 254e3c056968e7a89830d409d8b4ebe0
+
 spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
       url: jdbc:mysql://127.0.0.1:3306/uhome?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
-      username: root
-      password: root
+      username: ENC(WeMMhaTH2vH9Bk0/uMIyPg==)
+      password: ENC(WeMMhaTH2vH9Bk0/uMIyPg==)
       initial-size: 1
       min-idle: 5
       max-active: 20
