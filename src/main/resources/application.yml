@@ -21,7 +21,7 @@ spring:
       test-on-return: false
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:/com/mapper/*.xml
 
 logging:
   level:

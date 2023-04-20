@@ -2,7 +2,7 @@ package com.shorturl.mapper;
 
 import com.shorturl.entity.UrlDO;
 
-public interface UrlDao {
+public interface UrlMapper {
     int save(UrlDO urlDO);
 
     UrlDO selectById(String id);

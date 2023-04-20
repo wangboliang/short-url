@@ -2,7 +2,7 @@ package com.shorturl.service.impl;
 
 import com.shorturl.domain.UrlDTO;
 import com.shorturl.entity.UrlDO;
-import com.shorturl.mapper.UrlDao;
+import com.shorturl.mapper.UrlMapper;
 import com.shorturl.service.UrlService;
 import com.shorturl.util.DateUtil;
 import com.shorturl.util.ShortUrlGenerator;
@@ -21,20 +21,20 @@ import java.util.Date;
 public class UrlServiceImpl implements UrlService {
 
     @Autowired
-    private UrlDao urlDao;
+    private UrlMapper urlMapper;
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
     @Override
     public String getLongUrlById(String id) {
         //url decode
-        return decodeUrl(urlDao.selectLongUrlById(id));
+        return decodeUrl(urlMapper.selectLongUrlById(id));
     }
 
     @Override
     public String getLongUrlByShortUrl(String shortUrl) {
         //url decode
-        return decodeUrl(urlDao.selectLongUrlByShortUrl(shortUrl));
+        return decodeUrl(urlMapper.selectLongUrlByShortUrl(shortUrl));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UrlServiceImpl implements UrlService {
         // url encode
         String longUrl = encodeUrl(urlDTO.getLongUrl());
         String id = ShortUrlGenerator.generateShortUrlId(longUrl, 6);
-        UrlDO urlDO = urlDao.selectById(id);
+        UrlDO urlDO = urlMapper.selectById(id);
         // if it exists, return
         if (urlDO != null && !StringUtils.isEmpty(urlDO.getShortUrl())) {
             return urlDO.getShortUrl();
@@ -58,13 +58,13 @@ public class UrlServiceImpl implements UrlService {
         // valid day default 30
         int validDays = urlDTO.getValidDays() == 0 ? 30 : urlDTO.getValidDays();
         urlDO.setExpiresDate(DateUtil.addDayOfYear(nowDate, validDays));
-        urlDao.save(urlDO);
+        urlMapper.save(urlDO);
         return urlDO.getShortUrl();
     }
 
     @Override
     public void clearExpiredData() {
-        urlDao.clearExpiredData();
+        urlMapper.clearExpiredData();
     }
 
     private String encodeUrl(String url) {
