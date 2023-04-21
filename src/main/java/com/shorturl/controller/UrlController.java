@@ -63,7 +63,8 @@ public class UrlController {
 //        }
 //        StringBuffer requestURL = request.getRequestURL();
 //        String host = requestURL.delete(requestURL.length() - request.getRequestURI().length(), requestURL.length()).toString();
-        urlDTO.setUrlPrefix(host +port + contextPath + "/r/");
+        String urlPrefix = "http://" + host + "/" + port + contextPath + "/r/";
+        urlDTO.setUrlPrefix(urlPrefix);
         String shortUrl = urlService.getAndSaveShortUrl(urlDTO);
         return ResponseEntity.ok(Response.success(shortUrl));
     }
