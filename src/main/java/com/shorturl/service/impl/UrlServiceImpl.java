@@ -48,7 +48,7 @@ public class UrlServiceImpl implements UrlService {
         urlDO = new UrlDO();
         urlDO.setId(id);
         urlDO.setLongUrl(longUrl);
-        urlDO.setShortUrl(urlDTO.getHost() + id);
+        urlDO.setShortUrl(urlDTO.getUrlPrefix() + id);
         Date nowDate = new Date();
         urlDO.setCreatedDate(nowDate);
         // valid day default 30
