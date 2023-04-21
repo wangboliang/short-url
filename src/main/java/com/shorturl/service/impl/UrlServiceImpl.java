@@ -8,7 +8,6 @@ import com.shorturl.util.DateUtil;
 import com.shorturl.util.ShortUrlGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -22,8 +21,6 @@ public class UrlServiceImpl implements UrlService {
 
     @Autowired
     private UrlMapper urlMapper;
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
 
     @Override
     public String getLongUrlById(String id) {
@@ -51,8 +48,7 @@ public class UrlServiceImpl implements UrlService {
         urlDO = new UrlDO();
         urlDO.setId(id);
         urlDO.setLongUrl(longUrl);
-        // shortUrl = host + context-path + /r/ +id
-        urlDO.setShortUrl(urlDTO.getHost() + contextPath + "/r/" + id);
+        urlDO.setShortUrl(urlDTO.getHost() + id);
         Date nowDate = new Date();
         urlDO.setCreatedDate(nowDate);
         // valid day default 30

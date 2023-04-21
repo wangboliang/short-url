@@ -4,6 +4,7 @@ import com.shorturl.domain.Response;
 import com.shorturl.domain.UrlDTO;
 import com.shorturl.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,12 @@ import java.net.URI;
 @RequestMapping("/")
 public class UrlController {
 
+    @Value("${server.host}")
+    private String host;
+    @Value("${server.port}")
+    private String port;
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
     @Autowired
     private UrlService urlService;
 
@@ -47,9 +54,16 @@ public class UrlController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        StringBuffer requestURL = request.getRequestURL();
-        String host = requestURL.delete(requestURL.length() - request.getRequestURI().length(), requestURL.length()).toString();
-        urlDTO.setHost(host);
+//        String host = "/";
+//        int serverPort = request.getServerPort();
+//        if (serverPort == 80 || serverPort == 443) {
+//            host = request.getScheme() + "://" + request.getServerName();
+//        } else {
+//            host = request.getScheme() + "://" + request.getServerName() + ":" + serverPort;
+//        }
+//        StringBuffer requestURL = request.getRequestURL();
+//        String host = requestURL.delete(requestURL.length() - request.getRequestURI().length(), requestURL.length()).toString();
+        urlDTO.setHost(host +port + contextPath + "/r/");
         String shortUrl = urlService.getAndSaveShortUrl(urlDTO);
         return ResponseEntity.ok(Response.success(shortUrl));
     }
