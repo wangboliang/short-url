@@ -19,6 +19,7 @@ import java.util.Date;
 @Service
 public class UrlServiceImpl implements UrlService {
 
+    private static final int DEFAULT_VALID_DAYS = 30;
     @Autowired
     private UrlMapper urlMapper;
 
@@ -38,24 +39,42 @@ public class UrlServiceImpl implements UrlService {
     public String getAndSaveShortUrl(UrlDTO urlDTO) {
         // url encode
         String longUrl = encodeUrl(urlDTO.getLongUrl());
-        String id = ShortUrlGenerator.generateShortUrlId(longUrl, 6);
+        int length = urlDTO.getLength() != null ? urlDTO.getLength() : ShortUrlGenerator.DEFAULT_LENGTH;
+        String id = ShortUrlGenerator.generateShortUrlId(longUrl, length);
+
         UrlDO urlDO = urlMapper.selectById(id);
         // if it exists, return
         if (urlDO != null && !StringUtils.isEmpty(urlDO.getShortUrl())) {
             return urlDO.getShortUrl();
         }
 
-        urlDO = new UrlDO();
+        // 构造新的 DO 对象
+        urlDO = buildUrlDO(id, longUrl, urlDTO);
+
+        try {
+            urlMapper.save(urlDO);
+        } catch (Exception e) {
+            log.error("Failed to save short url for id: {}", id, e);
+        }
+
+        return urlDO.getShortUrl();
+    }
+
+    private UrlDO buildUrlDO(String id, String longUrl, UrlDTO urlDTO) {
+        UrlDO urlDO = new UrlDO();
         urlDO.setId(id);
         urlDO.setLongUrl(longUrl);
         urlDO.setShortUrl(urlDTO.getUrlPrefix() + id);
-        Date nowDate = new Date();
+        Date nowDate = new Date(); // 复用当前时间戳
         urlDO.setCreatedDate(nowDate);
+
         // valid day default 30
-        int validDays = urlDTO.getValidDays() == 0 ? 30 : urlDTO.getValidDays();
+        int validDays = urlDTO.getValidDays() != null && urlDTO.getValidDays() > 0
+                ? urlDTO.getValidDays()
+                : DEFAULT_VALID_DAYS;
+
         urlDO.setExpiresDate(DateUtil.addDayOfYear(nowDate, validDays));
-        urlMapper.save(urlDO);
-        return urlDO.getShortUrl();
+        return urlDO;
     }
 
     @Override
@@ -65,13 +84,13 @@ public class UrlServiceImpl implements UrlService {
 
     private String encodeUrl(String url) {
         try {
-            if (url.indexOf("?") > -1) {
+            if (url.contains("?")) {
                 String host = url.substring(0, url.indexOf("?"));
-                String param = url.substring(url.indexOf("?") + 1, url.length());
+                String param = url.substring(url.indexOf("?") + 1);
                 url = host + "?" + URLEncoder.encode(param, "UTF-8");
             }
         } catch (Exception e) {
-            log.error("url encode error : {}", e);
+            log.error("url encode error : ", e);
         }
         return url;
     }
@@ -80,7 +99,7 @@ public class UrlServiceImpl implements UrlService {
         try {
             url = URLDecoder.decode(url, "UTF-8");
         } catch (Exception e) {
-            log.error("url decode error : {}", e);
+            log.error("url decode error : ", e);
         }
         return url;
     }

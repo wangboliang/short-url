@@ -25,8 +25,6 @@ public class UrlController {
 
     @Value("${server.host}")
     private String host;
-    @Value("${server.port}")
-    private String port;
     @Value("${server.servlet.context-path}")
     private String contextPath;
     @Autowired
@@ -54,14 +52,12 @@ public class UrlController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-//        String host = "/";
-//        int serverPort = request.getServerPort();
-//        if (serverPort == 80 || serverPort == 443) {
-//            host = request.getScheme() + "://" + request.getServerName();
-//        } else {
-//            host = request.getScheme() + "://" + request.getServerName() + ":" + serverPort;
-//        }
-        String urlPrefix = request.getScheme() + "://" + host + contextPath + "/r/";
+        String urlPrefix;
+        if (host.startsWith("http://") || host.startsWith("https://")) {
+            urlPrefix = host + contextPath + "/r/";
+        } else {
+            urlPrefix = request.getScheme() + "://" + host + contextPath + "/r/";
+        }
         urlDTO.setUrlPrefix(urlPrefix);
         String shortUrl = urlService.getAndSaveShortUrl(urlDTO);
         return ResponseEntity.ok(Response.success(shortUrl));

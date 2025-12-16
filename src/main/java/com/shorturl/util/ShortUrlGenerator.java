@@ -5,14 +5,13 @@ import java.security.NoSuchAlgorithmException;
 
 public class ShortUrlGenerator {
 
-    private static int DEFAULT_LENGTH = 8;
+    public static final int DEFAULT_LENGTH = 8;
 
     /**
      * 短链生成算法
      *
      * @param url    长链
      * @param length 长度
-     * @return
      */
     public static String generateShortUrlId(String url, int length) {
         // 要使用生成 URL 的字符
@@ -31,25 +30,19 @@ public class ShortUrlGenerator {
 
         // 这里需要使用 long 型来转换，因为 Inteper .parseInt() 只能处理 31 位 , 首位为符号位 , 如果不用 long ，则会越界
         long lHexLong = 0x3FFFFFFF & Long.parseLong(sTempSubString, 16);
-        String outChars = "";
-        length = (length >= DEFAULT_LENGTH) ? DEFAULT_LENGTH : length;
+        StringBuilder outChars = new StringBuilder();
+        length = Math.min(length, DEFAULT_LENGTH);
         for (int j = 0; j < length; j++) {
             // 把得到的值与 0x0000003D 进行位与运算，取得字符数组 chars 索引
             long index = 0x0000003D & lHexLong;
             // 把取得的字符相加
-            outChars += chars[(int) index];
+            outChars.append(chars[(int) index]);
             // 每次循环按位右移 5 位
             lHexLong = lHexLong >> 5;
         }
-        return outChars;
+        return outChars.toString();
     }
-
-    /**
-     * md5加密方法
-     *
-     * @param key
-     * @return
-     */
+    
     public static String getMD5Encrypted(String key) {
         try {
             // 得到一个信息摘要器
@@ -69,7 +62,7 @@ public class ShortUrlGenerator {
 
             // 标准的md5加密后的结果
             return buffer.toString();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException ignored) {
 
         }
         return "";

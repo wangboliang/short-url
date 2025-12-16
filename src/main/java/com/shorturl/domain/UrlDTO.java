@@ -8,5 +8,6 @@ public class UrlDTO {
     private String urlPrefix;
     private String longUrl;
     private String shortUrl;
-    private int validDays;
+    private Integer validDays;
+    private Integer length;
 }
